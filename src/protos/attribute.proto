@@ -1,0 +1,256 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package bdm;
+
+import "validations.proto";
+
+message AttributeId {
+    string id = 1;
+}
+
+message AttributeIds {
+    string attributeGroupId = 1;
+    repeated AttributeId ids = 2;
+}
+
+message AttributeGroup {
+    string id = 1;
+    string attributeGroupName = 2;
+    bool status = 3;
+    string createdAt = 4;
+    string updatedAt = 5;
+
+}
+
+message AttributesGroupByIds {
+    string attributeGroupName = 1;
+    repeated AttributeId ids = 2;
+    bool status = 3;
+}
+
+message AttributeGroups {
+    string id = 1;
+    string attributeGroupName = 2;
+    repeated AttributeByGroup attributes = 3;
+    bool status = 4;
+    string createdAt = 5;
+    string updatedAt = 6;
+
+}
+
+message AllGroup {
+    repeated AttributeGroup groups = 1;
+}
+
+message AttributeGroupMap {
+    string categoryId = 1;
+    string attributeGroupId = 2;
+    string attributeGroupName = 3;
+    
+}
+
+message AttributeByGroup {
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    bool constraint = 6;
+    string masterId = 7;
+}   
+
+message Attribute {
+
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    bool constraint = 6;
+    string masterId = 7;
+    string referenceMasterId = 8;
+    oneof validation {
+        TextValidation textVldn = 9;
+        NumericValidation numericVldn = 10;
+        DateValidation dateVldn = 11;
+        TimeValidation timeVldn = 12;
+        PasswordValidation passwordVldn = 13;
+        RangeValidation rangeVldn = 14;
+        SingleSelectionValidation singleSelectVldn = 15;
+        MultipleSelectionValidation multipleSelectionVldn = 16;
+        DropdownValidation dropDownVldn = 17;
+        UrlValidation urlVldn = 18;
+    }
+    repeated Rules rules = 19;
+    bool status = 20;
+    
+}
+
+message ReferenceAttribute {
+    string attributeName = 1;
+    string labelDescription = 2;
+    string displayName = 3;
+    string attributeType = 4;
+    string referenceMasterId = 5;
+    repeated Rules rules = 6;
+    bool status = 7;
+}
+
+message ReferenceAttributes {
+    repeated FetchReferenceAttribute referenceAttributes = 1;
+}
+
+message FetchReferenceAttribute {
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    string referenceMasterId = 6;
+    string rulesId = 7;
+}
+
+message ResReferenceAttribute {
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    string referenceMasterId = 6;
+}
+
+message UpdateAttribute{
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    bool constraint = 9;
+    bool status = 10;
+
+}
+
+message AttributeById {
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    bool constraint = 6;
+    bool status = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+}
+
+message AttributeUpdated {
+    string id = 1;
+    string attributeName = 2;
+    string labelDescription = 3;
+    string displayName = 4;
+    string attributeType = 5;
+    bool constraint = 10;
+    bool status = 11;
+}
+
+message AllAttributes {
+    repeated AttributeById attributes = 1;
+}
+
+message Rules {
+
+    string id = 1;
+    string ruleName = 2;
+    string ruleMongoId = 3;
+    string attributeId = 4;
+}
+
+message Validation {
+    int32 lengthMin = 1;
+    int32 lengthMax = 2;
+    string type = 3;
+}
+
+message Category {
+    string categoryId = 1;
+    string categoryName = 2;
+
+}
+
+message AttributeGrouped {
+    repeated AttributeById attributes = 1;
+}
+
+    message TextValidation {
+        string id = 1;
+        int32 maxCharacters = 2;
+        int32 minCharacters = 3; 
+        bool lowerCaseOnly = 4;
+        bool upperCaseOnly = 5;
+        bool allowNumbers = 6;
+        bool specialCharacters = 7;
+        bool spacingAllowed = 8;
+    }
+    
+    message NumericValidation {
+        string id = 1;
+        bool allowNumericOnly = 2;
+        bool allowDecimals = 3;
+        bool allowCommas = 4;
+        bool allowDots = 5;
+        bool allowSpaces = 6;
+    }
+    
+    message DateValidation {
+        string id = 1;
+        string format = 2;
+        string minDate = 3;
+        string maxDate = 4;
+    }
+    
+    message TimeValidation {
+        string id = 1;
+        string format = 2;
+        string minTime = 3;
+        string maxTime = 4;
+    }
+    
+    message PasswordValidation {
+        string id = 1;
+        bool masking = 2;
+        int32 minLength = 3;
+        int32 maxLength = 4;
+        string strengthAllowed = 5;
+    }
+    
+    message RangeValidation {
+        string id = 1;
+        bool inclusiveMin = 2;
+        bool inclusiveMax = 3;
+        int32 minRange = 4;
+        int32 maxRange = 5;
+    }
+    
+    message SingleSelectionValidation {
+        string id = 1;
+        string default = 2;
+    
+    }
+    
+    message MultipleSelectionValidation {
+        string id = 1;
+        int32 minEssentialSelection = 2;
+        int32 maxSelectionAllowed = 3;
+    }
+    
+    message DropdownValidation {
+        string id = 1;
+        int32 limitViewSelections = 2;
+    }
+    
+    message UrlValidation {
+        string id =1;
+        bool emptyProtocol = 2;
+        string protocol = 3;
+        string format = 4;
+    }

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package bdm;
+
+import "master.proto";
+import "attribute.proto";
+import "mapping.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+service BDM{
+    rpc CreateMaster(Master) returns (MasterMongo);
+    rpc GetMaster(MasterId) returns (MasterMongo);
+    rpc GetAllMaster(google.protobuf.Empty) returns (AllMasters);
+    rpc UpdateMaster(MasterMongo) returns (MasterMongo);
+    rpc DeleteMaster(MasterId) returns (google.protobuf.Empty);
+    rpc CreateReferenceMaster(ReferenceMaster) returns (ReferenceMasterId);
+    rpc GetReferenceMaster(MasterId) returns (ReferenceMasterId);
+    rpc GetAllReferenceMaster(google.protobuf.Empty) returns (AllReferenceMasters);
+    rpc UpdateReferenceMaster(ReferenceMasterId) returns (ReferenceMasterId);
+    rpc DeleteReferenceMaster(MasterId) returns (google.protobuf.Empty);
+    rpc CreateAttribute(Attribute) returns (AttributeById);
+    rpc GetAttribute(AttributeId) returns (AttributeById);
+    rpc GetAllAttribute(google.protobuf.Empty) returns (AllAttributes);
+    rpc UpdateAttribute(UpdateAttribute) returns (AttributeById);
+    rpc DeleteAttribute(AttributeId) returns (google.protobuf.Empty);
+    rpc CreateReferenceAttribute(ReferenceAttribute) returns (ResReferenceAttribute);
+    rpc GetReferenceAttribute(AttributeId) returns (ResReferenceAttribute);
+    rpc GetReferenceMastersAttribute(MasterId) returns (ReferenceAttributes);
+    rpc GetAllReferenceAttribute(google.protobuf.Empty) returns (ReferenceAttributes);
+    rpc UpdateReferenceAttribute(ReferenceAttribute) returns (ReferenceAttribute);
+    rpc DeleteReferenceAttribute(AttributeId) returns (google.protobuf.Empty);
+    rpc FetchReferenceAttribute(AttributeId) returns (ReferenceAttributes);
+    rpc CreateAttributeGroup(AttributesGroupByIds) returns (AttributeGroup);
+    rpc GetAttributeGroup(AttributeId) returns (AttributeGroups);
+    rpc GetAllAttributeGroup(google.protobuf.Empty) returns (AllGroup);
+    rpc AssignAttributeToAttributeGroup(AttributeIds) returns (AttributeGroups);
+    rpc UpdateAttributeGroup(AttributeGroup) returns (AttributeGroup);
+    rpc DeleteAttributeGroup(AttributeId) returns (google.protobuf.Empty);
+    rpc MapAttributesToCategory(MapCategory) returns (AllAttributes);
+    rpc MapAttributeGroupToCategory(MapGroup) returns (AllAttributes);
+    rpc CreatePhyscialModel(CategoryId) returns (google.protobuf.Empty);
+}

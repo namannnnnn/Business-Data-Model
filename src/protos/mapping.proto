@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package bdm;
+
+message attributeIds {
+    string attributeId = 1;
+}
+
+message MapCategory {
+    string categoryId = 1;
+    repeated string ids = 2;
+}
+
+message CategoryId{
+    string categoryId = 1;
+}
+
+message MapGroup {
+    string categoryId = 1;
+    string id = 2;
+}

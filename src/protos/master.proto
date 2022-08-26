@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package bdm;
+
+message MasterMongo {
+    string id = 1;
+    string masterEntityName = 2;
+    string masterEntityType = 3;
+    string masterEntityDescription = 4;
+    int32  masterEntityLevels = 5;
+    string hierarchyDescription = 6;
+    bool status = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+} 
+
+message AllMasters {
+    repeated MasterMongo masters = 1;
+}
+
+message AllReferenceMasters {
+    repeated ReferenceMasterId referenceMasters = 1;
+}
+
+message Master {
+    string masterEntityName = 1;
+    string masterEntityType = 2;
+    string masterEntityDescription = 3;
+    int32  masterEntityLevels = 4;
+    string hierarchyDescription = 5;
+    bool status = 6;
+}
+
+message ReferenceMaster {
+    string masterEntityName = 1;
+    string masterEntityType = 2;
+    string masterEntityDescription = 3;
+    bool status = 4;
+
+}
+
+message ReferenceMasterId {
+    string id = 1;
+    string masterEntityName = 2;
+    string masterEntityType = 3;
+    string masterEntityDescription = 4;
+    bool status = 5;
+    string createdAt = 6;
+    string updatedAt = 7;
+}
+
+message MasterId{
+    string id = 1;
+}

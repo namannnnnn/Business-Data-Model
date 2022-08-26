@@ -1,0 +1,8 @@
+{
+    "terminal.integrated.commandsToSkipShell": [
+        "workbench.action.quickOpen",
+        "javascript.implicitProjectConfig.experimentalDecorators: true"
+    ],
+    "workbench.settings.useSplitJSON": true,
+    "workbench.settings.editor": "json"
+}
