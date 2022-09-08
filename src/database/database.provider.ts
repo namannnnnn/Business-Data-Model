@@ -18,6 +18,7 @@ export const databaseProviders = [
         database: 'BDM',
         entities: [ 'dist/**/*.entity{.ts,.js}'],
         migrations: [],
+        synchronize: true
 
       });
       return dataSource.initialize();
@@ -43,8 +44,9 @@ export const PhysicalDataModel: TypeOrmModuleOptions= {
   username: 'postgres',
   password: '1234',
   database: 'PDM',
-  entities: [PdmTables]
+  entities: [PdmTables],
+synchronize: true
 }
 
-npx postgres-schema-ts postgresql//postgres:1234@127.0.0.1:5432/PDM?currentSchema=public 555a37ce-6698-4835-adc3-247c72bf53ddPDM src/iterfaces/columns.interface.ts
-schemats generate -c postgresql://localhost:5432/PDM?user=postgres&password=1234 -t 555a37ce-6698-4835-adc3-247c72bf53ddPDM -o src/iterfaces/columns.interface.ts
+// npx postgres-schema-ts postgresql//postgres:1234@127.0.0.1:5432/PDM?currentSchema=public 555a37ce-6698-4835-adc3-247c72bf53ddPDM src/iterfaces/columns.interface.ts
+// schemats generate -c postgresql://postgres:1234@localhost:5432/PDM -t 555a37ce-6698-4835-adc3-247c72bf53ddPDM -o src/iterfaces/columns.interface.ts

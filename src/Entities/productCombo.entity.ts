@@ -4,16 +4,16 @@ import { Entity, Column, PrimaryColumn, JoinTable, ManyToMany, ManyToOne, OneToM
 import { Attribute } from './attribute.entity'
 import { ProductAssignment } from './productAssignment.entity'
 import { ProductComboAssignment } from './productComboAssignment.entity'
-import { ProductGroupAssignment } from './productGroupAssignment.entity';
 
-@Entity('products')
-export class Product {
+
+@Entity('productCombos')
+export class ProductCombo {
 
     @PrimaryColumn()
     id : string
 
     @Column()
-    productName : string
+    productComboName : string
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public createdAt: Date;
@@ -21,12 +21,6 @@ export class Product {
     @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     public updatedAt: Date;
 
-    @OneToMany(() => ProductAssignment, productAssignment => productAssignment.product)
-    productAssignments : ProductAssignment[];
-
-    @OneToMany(() => ProductGroupAssignment, productGroupAssignment => productGroupAssignment.product)
-    productGroupAssignments : ProductGroupAssignment[];
-
-    @OneToMany(() => ProductComboAssignment, productComboAssignment => productComboAssignment.product)
+    @OneToMany(() => ProductComboAssignment, productComboAssignment => productComboAssignment.productCombo)
     productComboAssignments : ProductComboAssignment[];
 }

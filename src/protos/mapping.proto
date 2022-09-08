@@ -7,8 +7,8 @@ message attributeIds {
 }
 
 message MapCategory {
-    string categoryId = 1;
-    repeated string ids = 2;
+    string productId = 1;
+    string categoryId = 2;
 }
 
 message CategoryId{
@@ -18,4 +18,62 @@ message CategoryId{
 message MapGroup {
     string categoryId = 1;
     string id = 2;
+}
+
+message MapGroupProduct {
+    string productId = 1;
+    string id = 2;
+}
+
+message Product {
+    string productName = 1;
+}
+
+message ProductRes {
+    string id = 1;
+    string productName = 2;
+    string createdAt = 3;
+    string updatedAt = 4;
+}
+
+message ProductCombo {
+    string productComboName = 1;
+}
+
+message ProductComboRes {
+    string id = 1;
+    string productComboName = 2;
+    string createdAt = 3;
+    string updatedAt = 4;   
+}
+
+message MapProductToCombo {
+    string productComboId = 1;
+    repeated string ids =2;
+}
+
+message MapProduct {
+    string productId = 1;
+    repeated string ids = 2;
+}
+
+message Products {
+    repeated ProductResp products = 1;
+}
+
+message ProductResp {
+    string id = 1;
+    string productName = 2;
+}
+
+message AttId {
+}
+
+message AttGroupId {
+ }
+
+message PhysicalModel {
+    string tableName = 1;
+    repeated string attributeIds = 2;
+    repeated string attributeGroupIds = 3;
 }

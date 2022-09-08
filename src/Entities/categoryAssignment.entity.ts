@@ -8,13 +8,13 @@ import { Attribute } from './attribute.entity';
 export class  CategoryAssignment {
 
     @PrimaryColumn()
-    id: string;
-
-    @Column()
     categoryId: string;
 
-    @Column()
+    @PrimaryColumn()
     attributeId: string;
+
+    @Column()
+    grouping : boolean;
 
     @ManyToOne(() => Attribute, attribute => attribute.categoryAssignments)
     attribute: Attribute;

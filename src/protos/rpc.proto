@@ -39,5 +39,18 @@ service BDM{
     rpc DeleteAttributeGroup(AttributeId) returns (google.protobuf.Empty);
     rpc MapAttributesToCategory(MapCategory) returns (AllAttributes);
     rpc MapAttributeGroupToCategory(MapGroup) returns (AllAttributes);
+    rpc CreateProduct(Product) returns (ProductRes);
+    rpc CreateProductCombo(ProductCombo) returns (ProductComboRes);
+    rpc MapAttributesToProduct(MapProduct) returns (AllAttributes);
+    rpc MapAttributeGroupToProduct(MapGroupProduct) returns (AllAttributes);
+    rpc MapProductToCategory(MapCategory) returns (AllAttributes);
+    rpc MapProductToCombo(MapProductToCombo) returns (Products);
     rpc CreatePhyscialModel(CategoryId) returns (google.protobuf.Empty);
+    rpc GetPhysicalModel(CategoryId) returns (PhysicalModel);
+    rpc Timepass(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
+
+
+// Product - > Category 
+// Product - > Category- Combo
+// Category -> Combo

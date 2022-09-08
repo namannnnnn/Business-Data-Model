@@ -74,7 +74,6 @@ export class ValidationService {
           case "numeric" : 
           if(numericVldn){
             await this.numericValidationRepository.save({ id: uuidv4(), "type": numericVldn.type,  "allowDecimal":numericVldn.allowDecimal, "allowCommas":numericVldn.allowCommas, "allowDots":numericVldn.allowDots, "allowSpaces":numericVldn.allowSpaces, "attributeId":attributeId })
-    
           }else {
             await this.numericValidationRepository.save({ id: uuidv4(), "type": "int",  "allowDecimal":true, "allowCommas":true, "allowDots":true, "allowSpaces":false, "attributeId":attributeId })
           }
@@ -346,13 +345,15 @@ export class ValidationService {
       
       // 2
       case "textArea" : 
-      validationFound = await this.textValidationRepository.find( {  where : { id:attributeId } } )
+      validationFound = await this.textValidationRepository.find( {  where : { attributeId:attributeId } } )
 
       break;
       
       // 3
       case "numeric" : 
-      await this.numericValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound = await this.numericValidationRepository.find( {  where : { attributeId: attributeId } } )
+      console.log("Inside numeric")
+
 
       break;
       
@@ -363,32 +364,32 @@ export class ValidationService {
       
       // 5
       case "singleSelect" : 
-      await this.singleSelectValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.singleSelectValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       
       break;
       
       // 6
       case "multiSelect" : 
-      await this.multiSelectValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.multiSelectValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
       // 7
       case "richText" : 
-      validationFound = await this.textValidationRepository.find( {  where : { id:attributeId } } )
+      validationFound = await this.textValidationRepository.find( {  where : { attributeId:attributeId } } )
 
       break;
       
       // 8
       case "date" : 
-      await this.dateValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.dateValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
       // 9
       case "time" : 
-      await this.timeValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.timeValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
@@ -399,7 +400,7 @@ export class ValidationService {
       
       // 11
       case "password" : 
-      await this.passwordValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.passwordValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
@@ -415,13 +416,13 @@ export class ValidationService {
       
       // 14
       case "dropdown" : 
-      await this.dropdownValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.dropdownValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
       // 15
       case "url" : 
-      await this.urlValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.urlValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       
@@ -433,7 +434,7 @@ export class ValidationService {
       
       // 17
       case "Range" : 
-      await this.rangeValidationRepository.find( {  where : { attributeId: attributeId } } )
+      validationFound =await this.rangeValidationRepository.find( {  where : { attributeId: attributeId } } )
 
       break;
       

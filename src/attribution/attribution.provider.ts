@@ -6,6 +6,8 @@ import { TextValidation, NumericValidation, DateValidation, TimeValidation , Pas
 import { Rule } from '../Entities/rules.entity';
 import { ReferenceMaster } from 'src/Entities/master.entity'
 import { CategoryAssignment } from 'src/Entities/categoryAssignment.entity';
+import { ProductAssignment } from 'src/Entities/productAssignment.entity';
+import { ProductComboAssignment } from 'src/Entities/productComboAssignment.entity';
 
 
 export const attributeProviders = [
@@ -83,5 +85,16 @@ export const attributeProviders = [
     provide : 'CATEGORY_ASSIGNMENT_REPOSITORY',
     useFactory: (dataSource: DataSource) => dataSource.getRepository(CategoryAssignment),
     inject: ['DATA_SOURCE'],
-  }
+  },
+  {
+    provide : 'PRODUCT_ASSIGNMENT_REPOSITORY',
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(ProductAssignment),
+    inject: ['DATA_SOURCE'],
+  },
+   
+    { 
+        provide :'PRODUCT_COMBO_ASSIGNMENT_REPOSITORY',
+        useFactory: (dataSource: DataSource) => dataSource.getRepository(ProductComboAssignment),
+        inject : [ 'DATA_SOURCE']
+    }
 ];

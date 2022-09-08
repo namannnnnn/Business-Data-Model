@@ -138,9 +138,56 @@ export class AttributeController {
         return { attributes : res}
     }
 
+    @GrpcMethod('BDM', 'CreateProduct')
+    private async createProduct( body :{ productName: string}):Promise<any> {
+        const res = await this.service.createProducts(body);
+        return res;
+    }
+
+    @GrpcMethod('BDM', 'CreateProductCombo')
+    private async createProductCombo( body :{ productComboName: string}):Promise<any> {
+        const res = await this.service.createProductCombos(body);
+        return res
+    }
+
+    @GrpcMethod('BDM', 'MapAttributesToProduct')
+    private async mapAttributesToProduct( body :{ productId: string, ids : Array<string>}):Promise<any> {
+        const res = await this.service.mapAttributesToProducts(body)
+        return { attributes : res  }
+    }
+
+    @GrpcMethod('BDM', 'MapAttributeGroupToProduct')
+    private async mapAttributeGroupsToProduct( body :{ productId : string, id: string}):Promise<any> {
+        const res = await this.service.mapAttributeGroupsToProducts(body)
+        return { attributes : res}
+    }
+
+    @GrpcMethod('BDM', 'MapProductToCombo')
+    private async mapProductToCombo( body : { productComboId: string, ids : Array<string>}):Promise<any> {
+        const res = await this.service.mapProductsToCombo(body);
+        return { products : res }
+    }
+    
+    @GrpcMethod('BDM', 'MapProductToCategory')
+    private async mapProductToCategory(body: { productId: string, categoryId: string}):Promise<any> {
+        const res = await this.service.mapProductsToCategory(body)
+        return { attributes : res }
+    }
+
     @GrpcMethod('BDM', 'CreatePhyscialModel')
     private async createPhyscialModel( body: {categoryId: string}): Promise<any> {
         const res = await this.service.createColumns(body)
+    }
+
+    @GrpcMethod('BDM', 'GetPhysicalModel')
+    private async getPhysicalModel( body: { categoryId: string}):Promise<any> {
+        const res = await this.service.getPhysicalModel(body);
+        return res;
+    }
+
+    @GrpcMethod('BDM', 'Timepass')
+    private async emnem():Promise<any> {
+        const res = await this.service.timepass()
     }
 
  }

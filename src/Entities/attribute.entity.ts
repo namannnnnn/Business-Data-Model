@@ -6,6 +6,7 @@ import { AttributeGroup } from './attributeGroup.entity';
 import { Rule } from './rules.entity'
 import { Category } from './category.entity'
 import { CategoryAssignment } from './categoryAssignment.entity'
+import { ProductAssignment } from './productAssignment.entity'
 
 @Entity('attributes')
 export class Attribute {
@@ -54,6 +55,9 @@ export class Attribute {
 
     @OneToMany(() => CategoryAssignment, categoryAssignment => categoryAssignment.attribute)
     categoryAssignments : CategoryAssignment[];
+
+    @OneToMany(() => ProductAssignment, productAssignment => productAssignment.attribute)
+    productAssignments : ProductAssignment[];
 
     @ManyToOne(() => Master, master => master.attributes)
     master: Master;

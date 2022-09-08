@@ -2,6 +2,8 @@
 
 import { Entity, Column, PrimaryColumn, ManyToOne,OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Attribute } from './attribute.entity'
+import { CategoryGroupAssignment } from './categoryGroupAssignment.entity'
+import  { ProductGroupAssignment } from './productGroupAssignment.entity'
 
 @Entity('attributeGroups')
 export class AttributeGroup {
@@ -23,5 +25,12 @@ export class AttributeGroup {
 
     @OneToMany(() => Attribute, attribute => attribute.attributeGroup)
     attributes : Attribute[];
+
+    @OneToMany(() => CategoryGroupAssignment, categoryGroupAssignment => categoryGroupAssignment.attributeGroup)
+    categoryGroupAssignments : CategoryGroupAssignment[];
+
+    @OneToMany(() => ProductGroupAssignment, productGroupAssignment => productGroupAssignment.attributeGroup)
+    productGroupAssignments : ProductGroupAssignment[];
+
 
 }

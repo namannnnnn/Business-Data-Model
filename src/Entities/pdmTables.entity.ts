@@ -3,7 +3,7 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, OneToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 
 
-@Entity('pdmTables')
+@Entity('pdm_tables')
 export class PdmTables {
 
     @PrimaryColumn()

@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import { Injectable, Inject } from '@nestjs/common';
-import { Repository , QueryRunner, Table, DataSource, In} from 'typeorm';
+import { Repository , QueryRunner, Table, DataSource, In, getManager} from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Attribute, ReferenceAttributes  } from '../Entities/attribute.entity'
@@ -17,6 +17,12 @@ import { Category } from 'src/Entities/category.entity';
 import { databaseSource } from 'src/database/database.provider';
 import { CategoryAssignment } from 'src/Entities/categoryAssignment.entity';
 import { PdmTables } from 'src/Entities/pdmTables.entity';
+import { Product } from 'src/Entities/product.entity';
+import { ProductAssignment } from '../Entities/productAssignment.entity'
+import { ProductCombo } from '../Entities/productCombo.entity'
+import { ProductComboAssignment } from '../Entities/productComboAssignment.entity'
+import { ProductGroupAssignment } from '../Entities/productGroupAssignment.entity'
+import { CategoryGroupAssignment } from '../Entities/categoryGroupAssignment.entity'
 import * as child from 'child_process'
 
 
@@ -41,11 +47,29 @@ export class AttributeService {
     @Inject('CATEGORY_REPOSITORY')
     private categoryRepository: Repository<Category>,
 
+    @Inject('PRODUCT_REPOSITORY')
+    private productRepository: Repository<Product>,
+
+    @Inject('PRODUCT_ASSIGNMENT_REPOSITORY')
+    private productAssignmentRepository: Repository<ProductAssignment>,
+
+    @Inject('PRODUCT_COMBO_ASSIGNMENT_REPOSITORY')
+    private productComboAssignmentRepository: Repository<ProductComboAssignment>,
+
+    @Inject('PRODUCT_COMBO_REPOSITORY')
+    private productComboRepository: Repository<ProductCombo>,
+
     @Inject(ValidationService)
     private readonly validationService: ValidationService,
 
     @Inject('CATEGORY_ASSIGNMENT_REPOSITORY')
     private categoryAssignmentRepository: Repository<CategoryAssignment>,
+
+    @Inject('PRODUCT_GROUP_ASSIGNMENT_REPOSITORY')
+    private productGroupAssignmentRepository: Repository<ProductGroupAssignment>,
+
+    @Inject('CATEGORY_GROUP_ASSIGNMENT_REPOSITORY')
+    private categoryGroupAssignmentRepository: Repository<CategoryGroupAssignment>,
     
     @InjectDataSource('PDM')
     private pdmDataSource: DataSource,
@@ -73,6 +97,7 @@ export class AttributeService {
     const attribute = await this.attributeRepository.find({ where:{ id : body.id } })
     let attributes = JSON.stringify(attribute[0])
     attributes = JSON.parse(attributes)
+    console.log(attributes)
     return { attributes };
   }
 
@@ -247,15 +272,16 @@ export class AttributeService {
 
   }
 
-  async findValidations ( ) {
-
-  }
 
   async mapAttributesToCategories (    body :{ categoryId: string, ids : Array<string>} ) : Promise<any> {
 
     await this.categoryRepository.save({ id: body.categoryId  })
     for( let i=0; i< body.ids.length; i++ ){
-      await this.categoryAssignmentRepository.save({ id:uuidv4(), "categoryId": body.categoryId, "attributeId": body.ids[i]})
+      const group = await this.attributeRepository.find({ select : { attributeGroupId : true}, where : { id: body.ids[i] } })
+
+        await this.categoryAssignmentRepository.save({ "categoryId": body.categoryId, "attributeId": body.ids[i], "grouping":false })
+      
+
     }
 
     const ats = await this.attributeRepository.findBy({ id: In(body.ids), })
@@ -263,21 +289,68 @@ export class AttributeService {
     let attributes = JSON.stringify(ats)
     attributes = JSON.parse(attributes)
     return attributes ;
-
-    // for( let i=0;i<body.ids.length ;i++ ) {
-    //  await this.categoriesAssignedRepository.save({   "categoryId": body.categoryId, "attributeId":body.ids[i].attributeId });
-    // }
-
-    // const mapped = await this.categoriesAssignedRepository.find({ where : { attributeId: body.ids[0].attributeId} })
-
-    // console.log(mapped)
-
   }
 
   async mapAttributeGroupsToCategories(body:{categoryId:string, id: string}):Promise<any> {
 
-    try {
       const catRes =  await this.categoryRepository.save({ id: body.categoryId  })
+      const attGroCat = await this.categoryGroupAssignmentRepository.save({ categoryId: body.categoryId, attributeGroupId : body.id})
+     
+    const attributeGroup = await this.attributeGroupRepository.find({
+    select:{
+      id: true
+    } , relations: {
+          attributes: true,
+      }, where:{
+        id : body.id
+      }
+    })
+
+    let atts = attributeGroup[0].attributes
+    let attArray = [""];
+    for( let i=0; i<atts.length; i++) { 
+
+      await this.categoryAssignmentRepository.save({ "categoryId": body.categoryId, "attributeId": atts[i].id, "grouping":true});
+      attArray.push(atts[i].id)
+
+    }
+    const ats = await this.attributeRepository.findBy({ id: In(attArray) })
+
+    let attributes = JSON.stringify(ats)
+    attributes = JSON.parse(attributes)
+    return attributes ;
+
+  }
+
+  async createProducts ( body : { productName:string } ):Promise<any> {
+    const prod = await this.productRepository.save({id : uuidv4(), productName: body.productName})
+    return prod;
+  }
+
+  async createProductCombos ( body : { productComboName:string}): Promise<any> {
+    const prodCom = await this.productRepository.save({ id:uuidv4(), productComboName: body.productComboName})
+    return prodCom;
+  }
+
+  async mapProductsToCombo ( body : { productComboId: string, ids : Array<string>} ):Promise<any> {
+    
+    let arr = [""]
+    for( let i = 0; i<body.ids.length;i++ ){
+      await this.productComboAssignmentRepository.save({ "productId": body.ids[i], "productComboId" : body.productComboId  });
+      arr.push(body.ids[i])
+    }
+    const prs = await this.productRepository.findBy({ id: In(arr) })
+
+    let products = JSON.stringify(prs)
+    products = JSON.parse(products)
+    return products;  }
+
+  async mapAttributeGroupsToProducts(body:{productId:string, id: string}):Promise<any> {
+
+    try {
+      const catRes =  await this.productRepository.save({ id: body.productId  })
+      const attGroPro = await this.productGroupAssignmentRepository.save({ productId: body.productId, attributeGroupId : body.id})
+
     } catch (err) {
       console.log(err)
     }
@@ -295,7 +368,7 @@ export class AttributeService {
     let attArray = [""];
     for( let i=0; i<atts.length; i++) { 
 
-      await this.categoryAssignmentRepository.save({ id:uuidv4(), "categoryId": body.categoryId, "attributeId": atts[i].id});
+      await this.productAssignmentRepository.save({ "productId": body.productId, "attributeId": atts[i].id, "grouping":true});
       attArray.push(atts[i].id)
 
     }
@@ -304,6 +377,44 @@ export class AttributeService {
     let attributes = JSON.stringify(ats)
     attributes = JSON.parse(attributes)
     return attributes ;
+  }
+
+  async mapAttributesToProducts (    body :{ productId: string, ids : Array<string>} ) : Promise<any> {
+
+    await this.productRepository.save({ id: body.productId  })
+    for( let i=0; i< body.ids.length; i++ ){
+      await this.productAssignmentRepository.save({ id:uuidv4(), "productId": body.productId, "attributeId": body.ids[i], "grouping":false})
+    }
+
+    const ats = await this.attributeRepository.findBy({ id: In(body.ids), })
+
+    let attributes = JSON.stringify(ats)
+    attributes = JSON.parse(attributes)
+    return attributes ;
+  }
+
+  async mapProductsToCategory(body:{ productId: string, categoryId: string}) :Promise<any> {
+    const groups = await this.productGroupAssignmentRepository.find({ select : { attributeGroupId:true }, where: { productId: body.productId } })
+    const attributes = await this.productAssignmentRepository.find({ select : { attributeId:true, grouping : true },where : { productId : body.productId }})
+
+    let attrs = []
+
+    for( let i=0; i<groups.length;i++ ){
+      await this.categoryGroupAssignmentRepository.save({ "categoryId": body.categoryId, "attributeGroupId":groups[i].attributeGroupId })
+
+    }
+
+    for( let i=0; i<attributes.length;i++ ){
+      await this.categoryAssignmentRepository.save({ "categoryId": body.categoryId, "attributeId":attributes[i].attributeId, "grouping":attributes[i].grouping })
+      attrs.push(attributes[i].attributeId)
+      
+    }
+
+    const ats = await this.attributeRepository.findBy({ id: In(attrs) })
+    console.log(ats)
+    let attres = JSON.stringify(ats)
+    attres = JSON.parse(attres)
+    return attres ;
 
   }
 
@@ -315,6 +426,7 @@ export class AttributeService {
         type:"uuid",
         isPrimary:true,
         isGenerated: true,
+        comment:undefined
 
       }
     ]
@@ -337,21 +449,25 @@ export class AttributeService {
       let attribut = await this.attributeRepository.find({where:{ id : allattributes[i].attributeId }  })
       if(attribut[0].constraint === true) {
         let types = await this.createReferenceMasters(attribut[0].id, body.categoryId, attribut[0].attributeName)
+        let reference = await this.masterReferenceRepository.find({ select : { id: true, masterEntityName:true } , where : { id : attribut[0].referenceMasterId } })
+        let name  = reference[0].masterEntityName.toLowerCase().trim()
         let columnTemp = {
-          name: attribut[0].attributeName,
+          name: (attribut[0].attributeName).toLowerCase().trim(),
           type : types,
           isPrimary:false,
           isGenerated: false,
+          comment: name+'_'+reference[0].id
   
         }
         columnsPdm.push(columnTemp)       } 
        else { 
         let validation = await this.validationService.findValidation(attribut[0].attributeType, attribut[0].id )
         let columnTemp = {
-          name: attribut[0].attributeName,
-          type : validation[0].type,
+          name: (attribut[0].attributeName).toLowerCase().trim(),
+          type : (validation[0].type).toString(),
           isPrimary:false,
           isGenerated: false,
+          comment: undefined
   
         }
         columnsPdm.push(columnTemp)
@@ -362,73 +478,122 @@ export class AttributeService {
     const queryRunner =   this.pdmDataSource.createQueryRunner()
 
     await queryRunner.connect()
-    // const table = await this.pdmTablesRepository.save({ id:uuidv4(), "categoryId": body.categoryId, "tableName":body.categoryId+'PDM'})
-    const table = await queryRunner.manager.getRepository(PdmTables).save({id:uuidv4(), "categoryId": body.categoryId, "tableName":body.categoryId+'PDM'})
-
+    const tableSuffix = body.categoryId.replace(/-/g,"_")
+    const table = await queryRunner.manager.getRepository(PdmTables).save({id:uuidv4(), "categoryId": body.categoryId, "tableName":'pdm_'+tableSuffix})
+  
 
    
 
     await queryRunner.createTable(
       new Table({
-        name : body.categoryId+'PDM',
+        name : 'pdm_'+tableSuffix,
         columns : columnsPdm
       })
     )
-    const tsblr = await queryRunner.getTable(body.categoryId+'PDM')
-      console.log(tsblr)
+    const tsblr = await queryRunner.getTable('PDM_'+tableSuffix)
     await queryRunner.release()
 
   }
 
   async createReferenceMasters (id:string, categoryId:string, name: string): Promise<any> {
     let body = { id :id }
-    let columnsPdm =[
-      {
-        name:"pdm_id",
-        type:"uuid",
-        isPrimary:true,
-        isGenerated: true,
-
-      }
-    ]
+   
     const refAtts = await this.fetchReferenceAttributes(body)
-    console.log(refAtts)
     const type = refAtts.attributes[0].attributeType
     const refMasId = refAtts.attributes[0].referenceMasterId
     const refMaster = await this.masterReferenceRepository.find({ where: { id : refMasId } })
     const refMasterName = refMaster[0].masterEntityName
-        const queryRunner =   this.pdmDataSource.createQueryRunner()
+    const refMasterSmall = refMasterName.toLowerCase()
+    const queryRunner = this.pdmDataSource.createQueryRunner()
 
     await queryRunner.connect()
-    // const table = await this.pdmTablesRepository.save({ id:uuidv4(), "categoryId": body.categoryId, "tableName":body.categoryId+'PDM'})
-    const table = await queryRunner.manager.getRepository(PdmTables).save({id:uuidv4(), "categoryId": categoryId, "tableName":refMasterName+'PDM'})
+    let tableName = (refMasterName).toLowerCase().trim()
+    const tableSuffix = (refMasId).replace(/-/g,"_")
+    tableName = tableName+'_'+tableSuffix
 
-      let columnTemp = {
-        name: name,
-        type : type,
-        isPrimary:false,
+    // const table = await this.pdmTablesRepository.save({ id:uuidv4(), "categoryId": body.categoryId, "tableName":body.categoryId+'PDM'})
+    const table = await queryRunner.manager.getRepository(PdmTables).save({id:uuidv4(), "categoryId": categoryId, "tableName":tableName})
+
+    let columnsPdm =[
+      {
+        name:"rm_id",
+        type:"varchar",
+        isPrimary:true,
         isGenerated: false,
 
+      },{
+        name: refMasterSmall,
+        type:type,
+        isPrimary:false,
+        isGenerated:false,
       }
-      columnsPdm.push(columnTemp)
+    ]
    
-    console.log(columnsPdm)
     await queryRunner.createTable(
       new Table({
-        name : refMasId+'PDM',
+        name : tableName,
         columns : columnsPdm
       })
     )
     
-    const tsblr = await queryRunner.getTable(refMasterName+'PDM')
+    const tsblr = await queryRunner.getTable(tableName)
+
+
       console.log(tsblr)
+      for(let i =0; i<refAtts.attributes.length; i++){
+        let name = (refAtts.attributes[i].attributeName)
+        let id = uuidv4().replace(/-/g, "");
+        await this.pdmDataSource.manager.query(`INSERT INTO ${tableName} (rm_id ,${refMasterSmall}) VALUES ('${id}' ,'${name}')`)
+      }
+
     await queryRunner.release()
 
     return type  
   }
 
+  async getPhysicalModel( body: { categoryId: string} ):Promise<any> {
 
+    let physicalDataModel = {
+      tableName : "",
+      attributeIds : [],
+      attributeGroupIds:[]
+    }
 
+    let atts = [];
+    let attgrs = [];
+    const queryRunner = this.pdmDataSource.createQueryRunner()
+
+    await queryRunner.connect()
+    const tableName = await queryRunner.manager.getRepository(PdmTables).find({ select : { "tableName":true } ,  where : {  "categoryId": body.categoryId }})
+   
+    physicalDataModel.tableName = tableName[0].tableName;
+
+    const attributeGroups = await this.categoryGroupAssignmentRepository.find({ where : { categoryId: body.categoryId } })
+    const attributes = await this.categoryAssignmentRepository.find({ where : { categoryId : body.categoryId, grouping : false }})
+
+    for(let i =0; i < attributeGroups.length; i++) {
+      physicalDataModel.attributeIds.push(attributeGroups[i].attributeGroupId)
+    }
+
+    for(let i = 0; i < attributes.length; i++){
+      physicalDataModel.attributeGroupIds.push(attributes[i].attributeId)
+    }
+    await queryRunner.release()
+
+    return physicalDataModel
+  }
+
+  async timepass():Promise<any> {
+
+    const queryRunner = this.pdmDataSource.createQueryRunner()
+
+    await queryRunner.connect()
+
+    const tsblr = await queryRunner.getTable('PDM_3007e737_0cb8_46e7_8a6a_a72b2f2129ff')
+    console.log(tsblr)
+    await queryRunner.release()
+
+  }
 
 }
  
@@ -444,8 +609,3 @@ export class AttributeService {
 // name: 'sku_id',
 // type: 'integer',
 // comment: undefined
-
-
-
-
-
